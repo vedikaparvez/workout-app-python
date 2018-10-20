@@ -1,121 +1,102 @@
-import sqlite3
-import time
 import datetime
-import random
+import sqlite3
 
 
-input_workout_day = input("Is it push, pull or legs day today? ")
+def workout_app():
 
+    conn = sqlite3.connect('workout.db')
+    c = conn.cursor()
 
-if input_workout_day == "push" or input_workout_day == "pull" or input_workout_day == "legs":
-    print("Okay let's begin!")
-else:
-    print("There seems to be an error, try again.")
-
-
-num_of_reps = ""
-input_workout = ""
-
-
-def function1(input_workout_day):
-    if input_workout_day == "push":
-        print("This is your schedule for the day: \n1. Push ups \n2. Chest press \n3. Chest fly \n4. Tripcep dips")
-    elif input_workout_day == "pull":
-        print("This is your schedule for the day: \n1. Two arm row \n2. One arm row \n3. Rear delt fly \n4. Shrugs")
-    elif input_workout_day == "legs":
-        print("This is your schedule for the day: \n1. Squats \n2. Deadlifts \n3. Calf raises \n4. Lunges")
-
-    if input_workout_day == "push":
-        input_workout = input("Type the exercise you want to start with: ")
-        if input_workout == "push ups":
-            x_pushups = ""
-            print("Enter the total number of reps over all sets: ", x_pushups)
-            x_pushups = input(num_of_reps)
-        elif input_workout == "chest press":
-            x_chestpress = ""
-            print("Enter the total number of reps over all sets: ", x_chestpress)
-            x_chestpress = input(num_of_reps)
-        elif input_workout == "chest fly":
-            x_chestfly = ""
-            print("Enter the total number of reps over all sets: ", x_chestfly)
-            x_chestfly = input(num_of_reps)
-        elif input_workout == "tricep dips":
-            x_tricepdips = ""
-            print("Enter the total number of reps over all sets: ", x_tricepdips)
-            x_tricepdips = input(num_of_reps)
+    def workout_day():
+        a_push = 1
+        a_pull = 2
+        a_legs = 3
+        a_rest = 4
+        diff = 4
+        x = datetime.datetime.now().timetuple().tm_yday
+        if (x-a_push) % diff == 0:
+            return("Push day")
+        elif (x-a_pull) % diff == 0:
+            return("Pull day")
+        elif (x-a_legs) % diff == 0:
+            return("Legs day")
+        elif (x-a_rest) % diff == 0:
+            return("Rest")
         else:
-            print("There seems to be an error, try again.")
+            pass
 
-    elif input_workout_day == "pull":
-        input_workout = input("Type the exercise you want to start with: ")
-        if input_workout == "two arm row":
-            x_twoarmrow = ""
-            print("Enter the total number of reps over all sets: ", x_twoarmrow)
-            x_twoarmrow = input(num_of_reps)
-        elif input_workout == "one arm row":
-            x_onearmrow = ""
-            print("Enter the total number of reps over all sets: ", x_onearmrow)
-            x_onearmrow = input(num_of_reps)
-        elif input_workout == "rear delt fly":
-            x_reardeltfly = ""
-            print("Enter the total number of reps over all sets: ", x_reardeltfly)
-            x_reardeltfly = input(num_of_reps)
-        elif input_workout == "shrugs":
-            x_shrugs = ""
-            print("Enter the total number of reps over all sets: ", x_shrugs)
-            x_shrugs = input(num_of_reps)
+    def input_sets(excercise_list):
+        c.execute(
+            'SELECT id FROM Workouts WHERE id = (SELECT MAX(id) FROM Workouts)')
+        workout_id = c.fetchone()[0]
+        input_i = ""
+        for i in excercise_list:
+            print(i)
+            for j in range(4):
+                input_i = input("Weight: ")
+                c.execute('INSERT INTO Sets(workout_id,workout,reps) VALUES (?,?,?)',
+                          (workout_id, i, input_i))
+                conn.commit()
+
+    def workouts():
+        day = workout_day()
+        if day == "Push day":
+            exercise_list = ["Push Ups", "Chest Press",
+                             "Chest Fly", "Tricep Dips"]
+            input_sets(exercise_list)
+
+        elif day == "Pull day":
+            exercise_list = ["One Arm Row",
+                             "Two Arm Row", "Rear Delt Fly", "Shrugs"]
+            input_sets(exercise_list)
+
+        elif day == "Legs day":
+            exercise_list = ["Squats", "Deadlifts", "Calf Raises", "Lunges"]
+            input_sets(exercise_list)
+
+        elif day == "Rest":
+            print("Today is rest day!")
+
         else:
-            print("There seems to be an error, try again.")
+            pass
 
-    elif input_workout_day == "legs":
-        input_workout = input("Type the exercise you want to start with: ")
-        if input_workout == "squats":
-            x_squats = ""
-            print("Enter the total number of reps over all sets: ", x_squats)
-            x_squats = input(num_of_reps)
-        elif input_workout == "deadlifts":
-            x_deadlifts = ""
-            print("Enter the total number of reps over all sets: ", x_deadlifts)
-            x_deadlifts = input(num_of_reps)
-        elif input_workout == "calf raises":
-            x_calfraises = ""
-            print("Enter the total number of reps over all sets: ", x_calfraises)
-            x_calfraises = input(num_of_reps)
-        elif input_workout == "lunges":
-            x_lunges = ""
-            print("Enter the total number of reps over all sets: ", x_lunges)
-            x_lunges = input(num_of_reps)
-        else:
-            print("There seems to be an error, try again.")
+    def create_workout_table():
+        c.execute(
+            'CREATE TABLE IF NOT EXISTS Workouts(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, workout_day TEXT)')
 
+    def create_exercise_table():
+        c.execute(
+            'CREATE TABLE IF NOT EXISTS Sets(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, workout_id REAL, workout TEXT, reps REAL, FOREIGN KEY(workout_id) REFERENCES Workouts(id))')
 
-function1(input_workout_day)
-function1(input_workout)
+    def static_data_entry():
+        day = str(workout_day())
+        c.execute(
+            "INSERT INTO Workouts(workout_day) VALUES (?)", [day])
+        conn.commit()
 
+    DATABASE = '/developer/python_practise/workout.db'
 
-conn = sqlite3.connect('workout.db')
-c = conn.cursor()
+    def get_db():
+        db = getattr(g, '_workout', None)
+        if db is None:
+            db = g._workout = sqlite3.connect(WORKOUT)
+        return db
 
+    # @app.teardown_appcontext
+    # def close_connection(exception):
+    #     db = getattr(g, '_workout', None)
+    #     if db is not None:
+    #         db.close()
 
-def create_table():
-    c.execute(
-        'CREATE TABLE stuffToPlot(day TEXT, workout TEXT, reps REAL)')
+    create_workout_table()
+    create_exercise_table()
+    static_data_entry()
 
+    workout_day()
+    workouts()
 
-def dynamic_data_entry(input_workout_day, input_workout, num_of_reps):
-    # date = str(datetime.datetime.fromtimestamp('%Y-%m-%d %H:%M:%S'))
-    day = input_workout_day
-    workout = str(input_workout)
-    reps = num_of_reps
-    c.execute(
-        "INSERT INTO stuffToPlot (day, workout, reps) VALUES (?, ?, ?)",
-        (day, workout, reps))
-    conn.commit()
+    c.close
+    conn.close()
 
 
-create_table()
-
-dynamic_data_entry(input_workout_day, input_workout, num_of_reps)
-
-c.close()
-conn.close()
+workout_app()
