@@ -1,8 +1,18 @@
+from flask import Flask, render_template
 import datetime
 import sqlite3
 
 
-def workout_app():
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return render_template('home.html')
+
+
+@app.route('/tracker')
+def tracker():
 
     conn = sqlite3.connect('workout.db')
     c = conn.cursor()
@@ -44,15 +54,18 @@ def workout_app():
             exercise_list = ["Push Ups", "Chest Press",
                              "Chest Fly", "Tricep Dips"]
             input_sets(exercise_list)
+            return render_template('_legs2.html')
 
         elif day == "Pull day":
             exercise_list = ["One Arm Row",
                              "Two Arm Row", "Rear Delt Fly", "Shrugs"]
             input_sets(exercise_list)
+            return render_template('_legs2.html')
 
         elif day == "Legs day":
             exercise_list = ["Squats", "Deadlifts", "Calf Raises", "Lunges"]
             input_sets(exercise_list)
+            return render_template('_legs2.html')
 
         elif day == "Rest":
             print("Today is rest day!")
@@ -82,6 +95,12 @@ def workout_app():
             db = g._workout = sqlite3.connect(WORKOUT)
         return db
 
+    # @app.teardown_appcontext
+    # def close_connection(exception):
+    #     db = getattr(g, '_workout', None)
+    #     if db is not None:
+    #         db.close()
+
     create_workout_table()
     create_exercise_table()
     static_data_entry()
@@ -93,4 +112,5 @@ def workout_app():
     conn.close()
 
 
-workout_app()
+if __name__ == '__main__':
+    app.run(debug=True)
