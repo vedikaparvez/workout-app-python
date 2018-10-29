@@ -1,0 +1,22 @@
+{% from "./includes/_render_field.html" import render_field %}
+
+<html>
+
+<head>
+    <title>login</title>
+</head>
+
+<body>
+    <h1>Enter your login details</h1>
+    <br>
+    <form method='POST' action="{{ url_for('form') }}">
+        {{ form.csrf_token }}
+        {{ render_field(form.username) }}
+
+        {{ render_field(form.password) }}
+        {{ form.recaptcha }}
+        <input type='submit' value='Submit'>
+    </form>
+</body>
+
+</html>

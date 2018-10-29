@@ -2,64 +2,17 @@
 
 {% block body %}
 <form action="/workout" method="POST">
-    <h3>Workout Information</h3>
-    Workout<br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Workout<br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Workout<br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Workout<br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-    Reps<br>
-    <input type="text" name="reps" /><br>
-
-
-    <input type="submit" value="submit" /><br>
+    <h2>Enter reps for workout {{workout_id}}</h2>
+    <hr>
+    {% for i in exercise_list %}
+    <h3>{{i}}</h3>
+    <input type="text" name="{{i}}">
+    <input type="text" name="{{i}}">
+    <input type="text" name="{{i}}">
+    <input type="text" name="{{i}}">
+    {% endfor %}
+    <br>
+    <br>
+    <input type="submit" value="submit" class="btn btn-primary" /><br>
 </form>
 {% endblock %}
